@@ -58,8 +58,10 @@ def process_answer_key(item_dict):
     for key, tasks in item_dict.items():
         for i, task in enumerate(tasks):
             if "\\ans" in task:
-                new_dict[key] = chr(ord('a') + i)
-                break
+                if key in new_dict:
+                    new_dict[key].append(chr(ord('a') + i))
+                else:
+                    new_dict[key] = [chr(ord('a') + i)]
 
     return new_dict
 
@@ -95,7 +97,7 @@ def process_second_enumerate(contents):
 
     return second_dict
 
-def generate_answer_key(item_dict, second_dict):
+def generate_answer_key(item_dict, second_dict, columns):
     """
     Generate an answer key file based on the extracted items.
 
@@ -105,13 +107,22 @@ def generate_answer_key(item_dict, second_dict):
     """
     with open("answer.tex", "w") as file:
         file.write("\\begin{center}\n\\texttt{Answer Key}\n")
-        file.write("\\begin{multicols}{3}\n\\begin{enumerate}\n")
+        file.write(f"\\begin{{multicols}}{{{columns}}}\n\\begin{{enumerate}}\n")
         for key, value in item_dict.items():
-            file.write(f"\\item ({value})\n")
-
+            if len(value) == 1:
+                file.write(f"\\item ({value[0]})\n")
+            elif len(value) == 2:
+                file.write(f'\\item ({value[0]}), ({value[1]})\n')
+            elif len(value) == 3:
+                file.write(f'\\item ({value[0]}), ({value[1]}), ({value[2]})\n')
+            elif len(value) == 4:
+                file.write(f'\\item ({value[0]}), ({value[1]}), ({value[2]}), ({value[3]})\n')    
         file.write("\\end{enumerate}\n")
-        file.write("\\begin{enumerate}\\addtocounter{enumi}{20}\n")
-        for key, value in second_dict.items():
-            file.write(f"\\item {value}\n")
-        file.write("\\end{enumerate}\n\\end{multicols}\n")
+        
+        if second_dict:
+            file.write("\\begin{enumerate}\\addtocounter{enumi}{20}\n")
+            for key, value in second_dict.items():
+                file.write(f"\\item {value}\n")
+            file.write("\\end{enumerate}\n")
+        file.write("\\end{multicols}\n")
         file.write("\\end{center}\n")
