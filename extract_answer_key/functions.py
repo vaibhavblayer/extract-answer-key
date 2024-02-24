@@ -1,4 +1,5 @@
 import re
+import subprocess
 
 def process_file(filename):
     """
@@ -62,8 +63,44 @@ def process_answer_key(item_dict):
                     new_dict[key].append(chr(ord('a') + i))
                 else:
                     new_dict[key] = [chr(ord('a') + i)]
-
+                    
+    for key, value in enumerate(new_dict.values()):
+        print(f"Problem {key+1} -> {value}")
     return new_dict
+
+# def process_second_enumerate(contents):
+#     """
+#     Process the second enumerate environment and extract items.
+
+#     Args:
+#         contents (str): The contents of the file.
+
+#     Returns:
+#         dict: A dictionary containing the extracted items.
+#     """
+#     second_items = []
+#     in_second_enumerate = False
+#     second_dict = {}
+
+#     for line in contents.split("\n"):
+#         if not line.startswith("%"):  # Skip commented lines
+#             if "\\begin{enumerate}\\addtocounter{enumi}{20}" in line:
+#                 in_second_enumerate = True
+#             elif "\\end{enumerate}" in line:
+#                 in_second_enumerate = False
+#             elif in_second_enumerate:
+#                 if "\\item" in line:
+#                     item_number = line.split("\\item")[1].strip()
+#                     if re.search(r"\\ansint{.+}$", item_number):
+#                         extracted_number = re.search(r"\\ansint{(.+)}$", item_number).group(1)
+#                         second_items.append(extracted_number)
+
+#     for i, item in enumerate(second_items):
+#         second_dict["item" + str(i+21)] = item
+
+#     return second_dict
+
+
 
 def process_second_enumerate(contents):
     """
@@ -81,8 +118,10 @@ def process_second_enumerate(contents):
 
     for line in contents.split("\n"):
         if not line.startswith("%"):  # Skip commented lines
-            if "\\begin{enumerate}\\addtocounter{enumi}{20}" in line:
+            match = re.search(r"\\begin{enumerate}\\addtocounter{enumi}{(\d+)}", line)
+            if match:
                 in_second_enumerate = True
+                start_number = int(match.group(1))  # Extract the starting number
             elif "\\end{enumerate}" in line:
                 in_second_enumerate = False
             elif in_second_enumerate:
@@ -93,9 +132,11 @@ def process_second_enumerate(contents):
                         second_items.append(extracted_number)
 
     for i, item in enumerate(second_items):
-        second_dict["item" + str(i+21)] = item
+        second_dict["item" + str(i + start_number + 1)] = item  # Use the extracted starting number
 
-    return second_dict
+    for key, value in enumerate(second_dict.values()):
+        print(f"Problem {key + start_number} -> {value}")
+    return (second_dict, start_number)
 
 def generate_answer_key(item_dict, second_dict, columns):
     """
@@ -119,10 +160,13 @@ def generate_answer_key(item_dict, second_dict, columns):
                 file.write(f'\\item ({value[0]}), ({value[1]}), ({value[2]}), ({value[3]})\n')    
         file.write("\\end{enumerate}\n")
         
-        if second_dict:
-            file.write("\\begin{enumerate}\\addtocounter{enumi}{20}\n")
-            for key, value in second_dict.items():
+        if second_dict[0]:
+            file.write(f"\\begin{{enumerate}}\\addtocounter{{enumi}}{{{second_dict[1]}}}\n")
+            for key, value in second_dict[0].items():
                 file.write(f"\\item {value}\n")
             file.write("\\end{enumerate}\n")
         file.write("\\end{multicols}\n")
         file.write("\\end{center}\n")
+
+    
+    subprocess.run(["bat", "answer.tex"], check=True)

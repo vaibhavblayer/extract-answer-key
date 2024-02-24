@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "extract-answer-key"
-version = "0.1.15"
-description = "Added multiple correct answer support  "
+version = "0.1.20"
+description = "Added support for integer answer keys with random numbering  "
 authors = ["vaibhavblayer <vaibhavblayer@gmail.com>"]
 readme = "README.md"
 packages = [{include = "extract_answer_key"}]
