@@ -135,7 +135,7 @@ def process_second_enumerate(contents):
         second_dict["item" + str(i + start_number + 1)] = item  # Use the extracted starting number
 
     for key, value in enumerate(second_dict.values()):
-        print(f"Problem {key + start_number} -> {value}")
+        print(f"Problem {key + 1 + start_number} -> {value}")
     return (second_dict, start_number)
 
 def generate_answer_key(item_dict, second_dict, columns):
