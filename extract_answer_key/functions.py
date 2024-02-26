@@ -115,6 +115,7 @@ def process_second_enumerate(contents):
     second_items = []
     in_second_enumerate = False
     second_dict = {}
+    start_number = 0 
 
     for line in contents.split("\n"):
         if not line.startswith("%"):  # Skip commented lines
@@ -136,6 +137,8 @@ def process_second_enumerate(contents):
 
     for key, value in enumerate(second_dict.values()):
         print(f"Problem {key + 1 + start_number} -> {value}")
+        
+    
     return (second_dict, start_number)
 
 def generate_answer_key(item_dict, second_dict, columns):
