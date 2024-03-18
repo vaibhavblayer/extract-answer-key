@@ -1,4 +1,20 @@
 # Extracts the answers(options) from a tex file
+
+### Install using pip
+```
+pip install extract-answer-key
+```
+
+### Usage
+```
+Usage: extract-answer-key [OPTIONS]
+
+Options:
+  -i, --inputfile PATH   Input file path  [default: ./main.tex]
+  -c, --columns INTEGER  Number of columns in answer key  [default: 5]
+  -h, --help             Show this message and exit.
+```
+
 ### Creates a seperate file answer.tex
 
 ```
@@ -19,11 +35,4 @@
 \end{center}
 ```
 
-```
-Usage: extract-answer-key [OPTIONS]
 
-Options:
-  -i, --inputfile PATH   Input file path  [default: ./main.tex]
-  -c, --columns INTEGER  Number of columns in answer key  [default: 5]
-  -h, --help             Show this message and exit.
-```
